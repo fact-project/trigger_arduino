@@ -10,7 +10,7 @@ double tau = 10;  // mean delta_t in ms
 
 double exponential_random_number(double tau){
   double u = tinymt64_generate_double(&tinymt);
-  return - tau * log(1 - u);
+  return - tau * log(u);
 }
 
 void setup() {
