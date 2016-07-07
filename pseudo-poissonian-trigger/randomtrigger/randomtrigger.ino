@@ -14,10 +14,6 @@ double exponential_random_number(double tau){
 }
 
 void setup() {
-  Serial.begin(9600);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
-  }
   pinMode(output, OUTPUT);
   digitalWrite(output, HIGH);
   tinymt64_init(&tinymt, analogRead(A0)); 
