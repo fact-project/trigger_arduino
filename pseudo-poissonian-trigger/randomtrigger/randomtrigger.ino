@@ -1,3 +1,10 @@
+/* Pseudo-poissonian trigger for FACT
+ * 
+ * If you want have a smaller mean rate than 200 Events/s, give tau in milliseconds
+ * and use delay(delta_ts[i]) instead of delayMicroseconds(delta_ts[i]).
+ * The arduino delayMicroseconds function only works correctly with delays < 16383.
+ */
+
 #include "tinymt64.h"
 
 tinymt64_t tinymt;
@@ -5,7 +12,7 @@ unsigned short output = 2;
 
 const unsigned short buffer_size = 500;
 unsigned short delta_ts[buffer_size];
-double tau = 5;  // mean delta_t in ms  
+double tau = 5000;  // mean delta_t in micro seconds
 
 
 double exponential_random_number(double tau){
@@ -21,7 +28,7 @@ void setup() {
 
 void loop() {
   for(int i = 0; i < buffer_size; i++){
-    delta_ts[i] = round(exponential_random_number(tau) * 1000);
+    delta_ts[i] = round(exponential_random_number(tau));
   }
   
   for(int i = 0; i < buffer_size; i++){
