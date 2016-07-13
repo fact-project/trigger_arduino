@@ -24,16 +24,37 @@ void setup() {
   pinMode(output, OUTPUT);
   digitalWrite(output, HIGH);
   tinymt64_init(&tinymt, analogRead(A0)); 
+  Serial.begin(9600);
+  while(!Serial){
+    delay(1);
+  };
+  Serial.println("ready");
 }
 
+bool on = false;
+
 void loop() {
-  for(int i = 0; i < buffer_size; i++){
-    delta_ts[i] = round(exponential_random_number(tau));
+  if (Serial.available() > 0){
+    int b = Serial.parseInt();
+    if (b == 0){
+      on = false;
+      Serial.println("Rec stop");
+    } else if (b == 1) {
+      on = true;
+      Serial.println("Rec start");
+    } else {
+      Serial.println("Rec unknown");
+    }
   }
-  
-  for(int i = 0; i < buffer_size; i++){
-    delayMicroseconds(delta_ts[i]);
-    digitalWrite(output, LOW);
-    digitalWrite(output, HIGH);  
+  if (on){
+    for(int i = 0; i < buffer_size; i++){
+      delta_ts[i] = round(exponential_random_number(tau));
+    }
+
+    for(int i = 0; i < buffer_size; i++){
+      delayMicroseconds(delta_ts[i]);
+      digitalWrite(output, LOW);
+      digitalWrite(output, HIGH);
+    }
   }
 }
