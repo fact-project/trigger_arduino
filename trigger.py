@@ -31,6 +31,10 @@ if __name__ == '__main__':
 
     trigger_arduino.write(b'1')
     print(trigger_arduino.readline().decode().strip())
-    sleep(args.time)
-    trigger_arduino.write(b'0')
-    print(trigger_arduino.readline().decode().strip())
+    try:
+        sleep(args.time)
+    except (KeyboardInterrupt, SystemExit):
+        pass
+    finally:
+        trigger_arduino.write(b'0')
+        print(trigger_arduino.readline().decode().strip())
