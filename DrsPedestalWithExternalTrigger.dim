@@ -123,3 +123,12 @@ BIAS_CONTROL/SET_ZERO_VOLTAGE
 > This is the end of First DRS Calibration
 > ----------------------------------------------------
 >
+> Turn on the EXT1 Trigger channel
+FTM_CONTROL/ENABLE_EXT1 yes
+
+> Maybe we have to turn off physics trigger
+> FTM_CONTROL/ENABLE_TRIGGER no
+
+> Start a custom run with that is using default configurations
+MCP/START -1 1000 custom
+
