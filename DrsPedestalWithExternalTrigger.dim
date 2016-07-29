@@ -19,8 +19,9 @@ MCP/START -1 1000 custom
 # need to wait until everything is configured
 # don't know the state numbers, so I just wait 4 seconds :-|
 .w 4000
+FTM_CONTROL/STOP_TRIGGER
 FTM_CONTROL/ENABLE_EXT1 yes
-FTM_CONTROL/ENABLE_TRIGGER yes
+FTM_CONTROL/START_TRIGGER
 
 # I think this is waiting until the run is done ... 
 .s FAD_CONTROL 8
