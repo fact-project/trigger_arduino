@@ -2,7 +2,7 @@
 
 > DrsPedestalWithExternalTrigger
 > ------------------------------
-#BIAS_CONTROL/RECONNECT
+BIAS_CONTROL/RECONNECT
 .w 1000
 FEEDBACK/STOP
 .w 500
