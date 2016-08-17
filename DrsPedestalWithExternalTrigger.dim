@@ -4,9 +4,29 @@
 > ------------------------------
 > DrsPedestalWithExternalTrigger
 > ------------------------------
+BIAS_CONTROL/RECONNECT
+
 FEEDBACK/STOP
+FEEDBACK/LOAD_CALIBRATION
 .w 500
 .s FEEDBACK 6
+
+#List of available states:
+# -[-1]:    NotReady (State machine not ready, events are ignored.)
+# -[0]:     Ready (State machine ready to receive events.)
+# -[1]:     DimNetworkNotAvailable (The Dim DNS is not reachable.)
+# -[2]:     Disconnected (The Dim DNS is reachable, but the required subsystems are not available.)
+# -[3]:     Connecting (Either biasctrl or fscctrl not connected.)
+# -[4]:     Connected (biasctrl and fscctrl are available and connected with their hardware.)
+# -[5]:     Calibrating (Bias crate calibrating in progress.)
+# -[6]:     Calibrated (Bias crate calibrated.)
+# -[7]:     WaitingForData (Current control started, waiting for valid temperature and current data.)
+# -[8]:     InProgress (Current control in progress.)
+# -[9]:     Warning (Current control in progress but current warning level exceeded.)
+# -[10]:    Critical (Current control in progress but critical current limit exceeded.)
+# -[11]:    OnStandby (Current control in progress but with limited voltage.)
+# -[256]:   ERROR (Common error state.)
+# -[65535]: FATAL (A fatal error occured, the eventloop is stopped.)
 
 BIAS_CONTROL/SET_ZERO_VOLTAGE
 .w 500
@@ -19,8 +39,38 @@ MCP/START -1 1000 custom
 # need to wait until everything is configured
 # don't know the state numbers, so I just wait 4 seconds :-|
 .w 4000
+FTM_CONTROL/STOP_TRIGGER
+.w 1000
+
+# A "custom" run has a predefined roi of 1024, but we want 300.
+# changing this after the Master Control Program (MCP) has configured 
+# everything nicely is not forseen, but of course possible.
+# ---------------------------------------------------------
+
+# This brings the fad_ctrl program back into a state, where one can
+# manually send commands to the FAD boards. The boards do not bother.
+FAD_CONTROL/RESET_CONFIGURE
+# This sets the ROI = 300 for all boards (-1 for all boards) 
+FAD_CONTROL/SET_REGION_OF_INTEREST -1 300
+
+# Now the FADs will write the next event they see, with a ROI=300,
+# the GUI (in case you looked at it right now) still shows 
+# ROI=1024, since the FADs do not acknowledge the new ROI setting.
+# In order to see, if the new setting was actually recieved by all FADs.
+# One needs to trigger one event and read the header of this event.
+# The FADs are to stupid for having a control interface.
+# One can only set them and trigger them. 
+# Each event header tells you their entire settings.
+# However, triggering one single event right now, would cause the
+# event builder to write this event into the file.
+# This we do not want. 
+# So I say "screw it", we don't check ... we just start triggering.
+
+
 FTM_CONTROL/ENABLE_EXT1 yes
-FTM_CONTROL/ENABLE_TRIGGER yes
+FTM_CONTROL/START_TRIGGER
+
+
 
 # I think this is waiting until the run is done ... 
 .s FAD_CONTROL 8
