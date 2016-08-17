@@ -16,6 +16,7 @@ parser.add_argument(
 
 if __name__ == '__main__':
     args = parser.parse_args()
+    print('Try to establish connection')
 
     trigger_arduino = Serial(
         port=args.port,
@@ -26,6 +27,7 @@ if __name__ == '__main__':
     line = ''
     while line != 'ready':
         line = trigger_arduino.readline().decode().strip()
+        print(line)
 
     print('Ready')
 
