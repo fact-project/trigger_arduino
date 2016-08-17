@@ -1,12 +1,11 @@
 #!/home/fact/operation/dimctrl --exec
 
->
-> ------------------------------
 > DrsPedestalWithExternalTrigger
 > ------------------------------
-BIAS_CONTROL/RECONNECT
-
+#BIAS_CONTROL/RECONNECT
+.w 1000
 FEEDBACK/STOP
+.w 500
 FEEDBACK/LOAD_CALIBRATION
 .w 500
 .s FEEDBACK 6
@@ -33,14 +32,18 @@ BIAS_CONTROL/SET_ZERO_VOLTAGE
 .s BIAS_CONTROL 7
 
 
+> 1 Starting MCP
+> ------------------------------
 
-
-MCP/START -1 1000 custom
+MCP/START -1 50000 custom
 # need to wait until everything is configured
 # don't know the state numbers, so I just wait 4 seconds :-|
+#
+.s FAD_CONTROL 8
 .w 4000
 FTM_CONTROL/STOP_TRIGGER
 .w 1000
+.s FTM_CONTROL 4
 
 # A "custom" run has a predefined roi of 1024, but we want 300.
 # changing this after the Master Control Program (MCP) has configured 
@@ -50,9 +53,13 @@ FTM_CONTROL/STOP_TRIGGER
 # This brings the fad_ctrl program back into a state, where one can
 # manually send commands to the FAD boards. The boards do not bother.
 FAD_CONTROL/RESET_CONFIGURE
+.s FAD_CONTROL 4
 # This sets the ROI = 300 for all boards (-1 for all boards) 
 FAD_CONTROL/SET_REGION_OF_INTEREST -1 300
+.w 1000
 
+> 2 Enabling EXT1
+> ------------------------------
 # Now the FADs will write the next event they see, with a ROI=300,
 # the GUI (in case you looked at it right now) still shows 
 # ROI=1024, since the FADs do not acknowledge the new ROI setting.
@@ -68,11 +75,17 @@ FAD_CONTROL/SET_REGION_OF_INTEREST -1 300
 
 
 FTM_CONTROL/ENABLE_EXT1 yes
+> You have 10 seconds to start arduino
+.w 10000
 FTM_CONTROL/START_TRIGGER
+> 3 Wainting for RunInProgress
+> ------------------------------
+.s FAD_CONTROL 9 #RunInProgress
 
-
+> 4 Waiting for run to be finished
+> ------------------------------
 
 # I think this is waiting until the run is done ... 
-.s FAD_CONTROL 8
-.s FAD_CONTROL 4
+.s FAD_CONTROL 4 #Connected
 
+.q
