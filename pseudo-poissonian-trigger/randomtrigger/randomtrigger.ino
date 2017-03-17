@@ -30,30 +30,40 @@ void setup() {
   Serial.println("ready");
 }
 
-bool on = false;
-
 void loop() {
-  if (Serial.available() > 0){
-    int b = Serial.parseInt();
-    if (b == 0){
-      on = false;
-      Serial.println("Rec stop");
-    } else if (b == 1) {
-      on = true;
-      Serial.println("Rec start");
-    } else {
-      Serial.println("Rec unknown");
+    bool on = receive_user_command();
+    if (on) generate_trigger();
+}
+
+bool receive_user_command() {
+    static bool on = false;
+    if (Serial.available() > 0)
+    {
+        int b = Serial.parseInt();
+        print("received: ");
+        if (b == 0){
+            on = false;
+            Serial.println("stop");
+        } else if (b == 1) {
+            on = true;
+            Serial.println("start");
+        } else {
+            Serial.println("unknown");
+        }
     }
-  }
-  if (on){
-    for(int i = 0; i < buffer_size; i++){
-      delta_ts[i] = round(exponential_random_number(tau));
+    return on;
+}
+
+void generate_trigger() {
+    for(int i = 0; i < buffer_size; i++)
+    {
+        delta_ts[i] = round(exponential_random_number(tau));
     }
 
-    for(int i = 0; i < buffer_size; i++){
-      delayMicroseconds(delta_ts[i]);
-      digitalWrite(trigger_pin, LOW);
-      digitalWrite(trigger_pin, HIGH);
+    for(int i = 0; i < buffer_size; i++)
+    {
+        delayMicroseconds(delta_ts[i]);
+        digitalWrite(trigger_pin, LOW);
+        digitalWrite(trigger_pin, HIGH);
     }
-  }
 }
