@@ -13,12 +13,6 @@ const unsigned short buffer_size = 500;
 unsigned short delta_ts[buffer_size];
 double tau = 5000;  // mean delta_t in micro seconds
 
-
-double exponential_random_number(double tau){
-  double u = tinymt64_generate_double(&tinymt);
-  return - tau * log(u);
-}
-
 void setup() {
   pinMode(trigger_pin, OUTPUT);
   digitalWrite(trigger_pin, HIGH);
@@ -66,4 +60,9 @@ void generate_trigger() {
         digitalWrite(trigger_pin, LOW);
         digitalWrite(trigger_pin, HIGH);
     }
+}
+
+double exponential_random_number(double tau){
+  double u = tinymt64_generate_double(&tinymt);
+  return - tau * log(u);
 }
